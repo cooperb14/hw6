@@ -8,6 +8,7 @@ Fufills the specifications of Nearest Neighbor assignment part 1
 import numpy as np
 from scipy.spatial import distance
 
+
 def synthetic_data():
     '''
     Generates a synthetic data set of 600 samples classified into
@@ -80,7 +81,7 @@ def n_validator(data, p, classifier, *args):
 
 def NNclassifier(training, test):
     '''
-    Classiefier funciton that takes in training data and its lables, and
+    Classifier funciton that takes in training data and its lables, and
     using nearest neighbor, calculates the most probable lable for the
     samples in the test data set.
     '''

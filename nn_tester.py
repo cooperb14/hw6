@@ -12,7 +12,7 @@ import nn
 def main():
     
     # read in cancer data from text file
-    with open('cancer_data.txt') as file:
+    with open('wdbc.data.txt') as file:
         cancer_data = file.readlines()
         
     # modifies cancer data to put it into proper format
@@ -23,9 +23,14 @@ def main():
     cancer_data = np.hstack((cancer_data, class_vector))
     
     # prints 5 fold n_validator with cancer data and synthetic data
-    print(nn.n_validator(cancer_data, 5, nn.NNclassifier))
-    print(nn.n_validator(nn.synthetic_data(), 5, nn.NNclassifier))
+    synthetic_result = nn.n_validator(cancer_data, 5, nn.NNclassifier)
+    print('5 fold validation of synthetic data: {}'.format(synthetic_result))
+    
+    print(' ')
+    
+    real_result = nn.n_validator(nn.synthetic_data(), 5, nn.NNclassifier)
+    print('5 fold validation of real data: {}'.format(real_result))
 
     
 main()
-    
+
