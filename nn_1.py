@@ -7,7 +7,40 @@ Fufills the specifications of Nearest Neighbor assignment part 1
 
 import numpy as np
 from scipy.spatial import distance
-from statistics import mode
+
+
+def synthetic_data():
+    '''
+    Generates a synthetic data set of 600 samples classified into
+    two categories
+    '''    
+    
+    #means
+    m1 = [2.5, 3.5]
+    m2 = [.5, 1]
+    
+    #covariance
+    cov1 = [[1,1],[1,4.5]]
+    cov2 = [[2,0],[0,1]]
+    
+    
+    #class 1 created
+    x1 = np.random.multivariate_normal(m1,cov1,300)
+    labels = np.zeros(300)
+    labels.shape = (300,1)
+    x1_labled = np.hstack((x1, labels))
+    
+    #class 2 created
+    x2 = np.random.multivariate_normal(m2,cov2,300)
+    labels = np.ones(300)
+    labels.shape = (300,1)
+    x2_labled = np.hstack((x2, labels))
+    
+    # total data set created and shuffled
+    total_data = np.vstack((x1_labled, x2_labled))
+    np.random.shuffle(total_data)
+    
+    return total_data
 
 
 def n_validator(data, p, classifier, *args):
@@ -15,6 +48,9 @@ def n_validator(data, p, classifier, *args):
     Takes in a total data set, and partitions it in several different ways,
     testing the classifier on the data during each partition
     '''
+    
+    # shuffles data set
+    np.random.shuffle(data)
     
     # sets partition value
     partition = data.shape[0]/p
@@ -31,12 +67,9 @@ def n_validator(data, p, classifier, *args):
         test = data[range(start, end)]
         
         class_index = training.shape[1] - 1
-        
-        # clean test data
-        test_anon = np.delete(test, class_index, 1)
-        
+         
         # obtain classifications for test partition
-        x = classifier(training, test_anon, args[0], args[1])
+        x = classifier(training, test)
         
         # check classifications against actual classifications
         matches = [i for i in range(len(x)) if x[i] == test[i][class_index]]
@@ -46,7 +79,7 @@ def n_validator(data, p, classifier, *args):
     return total/data.shape[0]
 
 
-def KNNclassifier(training, test, k, dist_type):
+def NNclassifier(training, test):
     '''
     Classifier funciton that takes in training data and its lables, and
     using nearest neighbor, calculates the most probable lable for the
@@ -55,15 +88,17 @@ def KNNclassifier(training, test, k, dist_type):
     
     class_index = training.shape[1] - 1
     
+    # strips test set of classifications
+    test_anon = np.delete(test, class_index, 1)
+    
     # calculates distances matrix
     training_anon = np.delete(training, class_index, 1)
-    dist = distance.cdist(test, training_anon , dist_type)
+    dist = distance.cdist(test_anon, training_anon , 'euclidean')
         
     # calculates lowest point/label and adds it to classification list
     classifiers = list()
     for i in range(dist.shape[0]):    
-        lowest_dist_indicies = list(np.argsort(dist[i])[0:k])
-        k_neighbors = [training[x][class_index] for x in lowest_dist_indicies]        
-        classifiers.append(mode(k_neighbors))
-        
+        lowest_dist_index = np.argsort(dist[i])[0]
+        classifiers.append(training[lowest_dist_index][class_index])
+
     return np.array(classifiers)
