@@ -35,7 +35,10 @@ def n_validator(data, p, classifier, *args):
     Takes in a total data set, and partitions it in several different ways,
     testing the classifier on the data during each partition
     '''
-
+    
+    # shuffle data
+    np.random.shuffle(data)
+    
     total = 0
     for i in range(p):
         training = partition_data(p, data, i)[0]

@@ -11,7 +11,7 @@ Description:
 
 	partition_data is simply a helper function for n_validator.
 
-	For nn_tester.py module, several functions combine to display the optimal k value, and k-distance_type combo, for accurately classifying test data based on training data. It does this by reading in the WDBC caner data from a text file, and finding the optimal k value of that, as well as by generating a synthetic data set and determining the optimal k value for a certain number of trials, then averaging all the trial results to reduce randomness.
+	For nn_tester.py module, several functions combine to display the optimal k value, and k-distance_type combo, for accurately classifying test data based on training data. It does this by reading in the WDBC caner data from a text file, as well as by generating a synthetic data set, and determining the optimal k values by averaging the performance of a certain number of trials.
 
 Bugs:
 	No bugs currently, that I have observed.
@@ -21,6 +21,8 @@ Additional Comments:
 	-Replaced all instances of ‘M’ with ‘0’ and all instances of ’B’ with ‘1’
 	-Replaced all ‘,’ with ‘ ‘
 
-	The trial number for the optimal k value with synthetic data is set to 100 as to assignment specification, however since it is a feature designed to reduce randomness, the higher it is set the more consistent the optimal k value will be for consecutive executions of the test code.
+	The trial number for the optimal k value is set to 100 as to assignment specification, however since it is a feature designed to reduce randomness, the higher it is set the more consistent the optimal k value will be for consecutive executions of the test code.
 
-	The program as a whole will take a bit of time to run, but will take less than a minute.
+	The p argument in n_validator, for the number of data partitions, is currently set to 15 for more accuracy, but can be reduced or increased.
+
+	The program as it is will take around 5 minutes to run.
