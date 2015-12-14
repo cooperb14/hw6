@@ -5,8 +5,10 @@ UNI: cbb2153
 Tester file for the nn.py module, testing it with both the Wisconsin data
 and the synthetically generated data
 '''
+
 import numpy as np
 import nn
+from statistics import mode
 
 
 def synthetic_data():
@@ -15,22 +17,21 @@ def synthetic_data():
     two categories
     '''    
     
-    #means
+    # means
     m1 = [2.5, 3.5]
     m2 = [.5, 1]
     
-    #covariance
+    # covariance
     cov1 = [[1,1],[1,4.5]]
     cov2 = [[2,0],[0,1]]
     
-    
-    #class 1 created
+    # class 1 created
     x1 = np.random.multivariate_normal(m1,cov1,300)
     labels = np.zeros(300)
     labels.shape = (300,1)
     x1_labled = np.hstack((x1, labels))
     
-    #class 2 created
+    # class 2 created
     x2 = np.random.multivariate_normal(m2,cov2,300)
     labels = np.ones(300)
     labels.shape = (300,1)
@@ -43,7 +44,7 @@ def synthetic_data():
     return total_data
 
 
-def best_k(data_set, trials, dist_type):
+def best_k(data_set, dist_type):
     '''
     Determines the best k value for labeling test data given a 
     specific distance type
@@ -55,14 +56,8 @@ def best_k(data_set, trials, dist_type):
     
     # test all k values until success rate is optimized
     while(val > last_val):
-        summation = []
-        
-        # tests k value for a number of trials to reduce randomness factor
-        for i in range(trials):
-            x = nn.n_validator(data_set, 5, nn.KNNclassifier, k, dist_type)
-            summation.append(x)
         last_val = val
-        val = sum(summation)/trials
+        val = nn.n_validator(data_set, 5, nn.KNNclassifier, k, dist_type)
         
         # only test odd values of k
         k += 2
@@ -95,7 +90,7 @@ def main():
     # determine optimal k for WDBC data
     print('For the WDBC data set:')
     for d_type in dist_types:
-        value = best_k(cancer_data, 1, d_type)
+        value = best_k(cancer_data, d_type)
         k_s.append(value[0])
         vals.append(value[1])
     
@@ -114,14 +109,22 @@ def main():
     vals = list()
     k_s = list()
     
-    # create synthetic data set
-    data = synthetic_data()
+    # set number of trials to run classifier on synthetic data set
+    trials = 100
     
-    # determine optimal k for synthetic data set
+    # determine optimal k for trials on synthetic data sets
     for d_type in dist_types:
-        value = best_k(data, 100, d_type)
-        k_s.append(value[0])
-        vals.append(value[1])
+        val_temp = list()
+        k_temp = list()
+        
+        # test k values for trial # of data sets to reduce randomness
+        for n in range(trials):
+            value = best_k(synthetic_data(), d_type)
+            k_temp.append(value[0])
+            val_temp.append(value[1])
+            
+        k_s.append(mode(k_temp))
+        vals.append(sum(val_temp)/trials)
     
     # Print optimal k values for each distance type
     print('Optimal K value for Euclidean distance is {}'.format(k_s[0]))

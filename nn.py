@@ -2,7 +2,7 @@
 Name: Cooper Bates
 UNI: cbb2153
 
-Fufills the specifications of Nearest Neighbor assignment part 1
+Fufills the specifications of Nearest Neighbor assignment part 2
 '''
 
 import numpy as np
@@ -10,31 +10,42 @@ from scipy.spatial import distance
 from statistics import mode
 
 
+def partition_data(p, data, index):
+    '''
+    Partitions total data chunk based on p value as well as iteration
+    index
+    '''
+    
+    # sets partition value
+    partition = data.shape[0]/p    
+    
+    # set start and end row indicies for partition
+    start = round(partition * index)
+    end =  round(partition * (index + 1))
+        
+    # obtain training and test data
+    training = np.delete(data, range(start, end) , 0)
+    test = data[range(start, end)]
+    
+    return training, test
+
+
 def n_validator(data, p, classifier, *args):
     '''
     Takes in a total data set, and partitions it in several different ways,
     testing the classifier on the data during each partition
     '''
-    
-    # sets partition value
-    partition = data.shape[0]/p
+
     total = 0
-    
     for i in range(p):
-        
-        # set start and end row indicies for partition
-        start = round(partition * i)
-        end =  round(partition * (i + 1))
-        
-        # obtain training and test data
-        training = np.delete(data, range(start, end) , 0)
-        test = data[range(start, end)]
-        
+        training = partition_data(p, data, i)[0]
+        test = partition_data(p, data, i)[1]
+
         class_index = training.shape[1] - 1
-        
+
         # clean test data
         test_anon = np.delete(test, class_index, 1)
-        
+
         # obtain classifications for test partition
         x = classifier(training, test_anon, args[0], args[1])
         
@@ -52,7 +63,7 @@ def KNNclassifier(training, test, k, dist_type):
     using nearest neighbor, calculates the most probable lable for the
     samples in the test data set.
     '''
-    
+
     class_index = training.shape[1] - 1
     
     # calculates distances matrix
